@@ -8,6 +8,7 @@ namespace BizHawk.Client.Common
 {
 	public static class PathEntryExtensions
 	{
+		private static readonly string SavefileExtension = "srm";
 		/// <summary>
 		/// Returns the base path of the given system.
 		/// If the system can not be found, an empty string is returned
@@ -236,7 +237,7 @@ namespace BizHawk.Client.Common
 			var pathEntry = collection[game.System, "Save RAM"]
 				?? collection[game.System, "Base"];
 
-			return $"{Path.Combine(collection.AbsolutePathFor(pathEntry.Path, game.System), name)}.SaveRAM";
+			return $"{Path.Combine(collection.AbsolutePathFor(pathEntry.Path, game.System), name)}.{SavefileExtension}";
 		}
 
 		// Shenanigans
@@ -271,7 +272,7 @@ namespace BizHawk.Client.Common
 		public static string AutoSaveRamAbsolutePath(this PathEntryCollection collection, IGameInfo game, IMovie movie)
 		{
 			var path = collection.SaveRamAbsolutePath(game, movie);
-			return path.Insert(path.Length - 8, ".AutoSaveRAM");
+			return path.Insert(path.Length - SavefileExtension.Length + 1, $".{SavefileExtension}");
 		}
 
 		public static string CheatsAbsolutePath(this PathEntryCollection collection, string systemId)
