@@ -484,7 +484,8 @@ namespace BizHawk.Emulation.Common
 					break;
 			}
 
-			game.Name = Path.GetFileNameWithoutExtension(fileName)?.Replace('_', ' ');
+			game.Name = Path.GetFileNameWithoutExtension(fileName);
+			// game.Name = Path.GetFileNameWithoutExtension(fileName)?.Replace('_', ' ');
 
 			// If filename is all-caps, then attempt to proper-case the title.
 #pragma warning disable CA1862 // testing whether it's all-caps

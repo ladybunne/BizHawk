@@ -272,7 +272,7 @@ namespace BizHawk.Client.Common
 		public static string AutoSaveRamAbsolutePath(this PathEntryCollection collection, IGameInfo game, IMovie movie)
 		{
 			var path = collection.SaveRamAbsolutePath(game, movie);
-			return path.Insert(path.Length - SavefileExtension.Length + 1, $".{SavefileExtension}");
+			return path.Insert(path.Length - SavefileExtension.Length - 1, ".Autosave");
 		}
 
 		public static string CheatsAbsolutePath(this PathEntryCollection collection, string systemId)
