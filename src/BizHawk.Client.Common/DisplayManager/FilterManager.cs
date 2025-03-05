@@ -70,10 +70,6 @@ namespace BizHawk.Client.Common.FilterManager
 
 		public IRenderTarget CurrRenderTarget;
 
-		// DPI / 96.0 indicates the display scaling
-		// this is mainly relevant for OSD
-		public int ControlDpi;
-
 		public IRenderTarget GetTempTarget(int width, int height)
 		{
 			return RenderTargetProvider.Get(new(width, height));
@@ -271,7 +267,7 @@ namespace BizHawk.Client.Common.FilterManager
 			if (currState.SurfaceDisposition == SurfaceDisposition.Texture)
 			{
 				var renderer = new Render();
-				Filters.Insert(Filters.Count, renderer);
+				Filters.Add(renderer);
 				Compile(channel, inSize, outsize, finalTarget);
 				return;
 			}

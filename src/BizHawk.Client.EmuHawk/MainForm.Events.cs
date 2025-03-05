@@ -183,13 +183,6 @@ namespace BizHawk.Client.EmuHawk
 			MovieEndRecordMenuItem.Checked = Config.Movies.MovieEndAction == MovieEndAction.Record;
 			MovieEndStopMenuItem.Checked = Config.Movies.MovieEndAction == MovieEndAction.Stop;
 			MovieEndPauseMenuItem.Checked = Config.Movies.MovieEndAction == MovieEndAction.Pause;
-
-			// Arguably an IControlMainForm property should be set here, but in reality only Tastudio is ever going to interfere with this logic
-			MovieEndFinishMenuItem.Enabled =
-			MovieEndRecordMenuItem.Enabled =
-			MovieEndStopMenuItem.Enabled =
-			MovieEndPauseMenuItem.Enabled =
-				!Tools.Has<TAStudio>();
 		}
 
 		private void AVSubMenu_DropDownOpened(object sender, EventArgs e)
@@ -893,12 +886,7 @@ namespace BizHawk.Client.EmuHawk
 					RewireSound();
 				}
 
-				old = Config.VSyncThrottle;
 				Config.VSyncThrottle = false;
-				if (old)
-				{
-					_presentationPanel.Resized = true;
-				}
 			}
 
 			ThrottleMessage();
@@ -911,12 +899,7 @@ namespace BizHawk.Client.EmuHawk
 			if (Config.SoundThrottle)
 			{
 				Config.ClockThrottle = false;
-				var old = Config.VSyncThrottle;
 				Config.VSyncThrottle = false;
-				if (old)
-				{
-					_presentationPanel.Resized = true;
-				}
 			}
 
 			ThrottleMessage();
@@ -925,7 +908,6 @@ namespace BizHawk.Client.EmuHawk
 		private void VsyncThrottleMenuItem_Click(object sender, EventArgs e)
 		{
 			Config.VSyncThrottle = !Config.VSyncThrottle;
-			_presentationPanel.Resized = true;
 			if (Config.VSyncThrottle)
 			{
 				Config.ClockThrottle = false;
@@ -949,11 +931,6 @@ namespace BizHawk.Client.EmuHawk
 		private void VsyncEnabledMenuItem_Click(object sender, EventArgs e)
 		{
 			Config.VSync = !Config.VSync;
-			if (!Config.VSyncThrottle) // when vsync throttle is on, vsync is forced to on, so no change to make here
-			{
-				_presentationPanel.Resized = true;
-			}
-
 			VsyncMessage();
 		}
 
@@ -1584,7 +1561,12 @@ namespace BizHawk.Client.EmuHawk
 
 		private void MainForm_Resize(object sender, EventArgs e)
 		{
-			_presentationPanel.Resized = true;
+			if (Config.CaptureMouse)
+			{
+				CaptureMouse(false);
+				CaptureMouse(true);
+			}
+
 			if (_framebufferResizedPending && WindowState is FormWindowState.Normal)
 			{
 				_framebufferResizedPending = false;

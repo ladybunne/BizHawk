@@ -818,6 +818,27 @@ namespace BizHawk.Emulation.Common
 				["START"] = 'S',
 				["RESET"] = 'r',
 			},
+			[VSystemID.Raw.Doom] = new()
+			{
+				["Backward"] = 'v',
+				["End Player"] = 'E',
+				["Fire"] = 'F',
+				["Forward"] = '^',
+				["Jump"] = 'J',
+				["Run"] = 'R',
+				["Strafe Left"] = '<',
+				["Strafe Right"] = '>',
+				["Turn Left"] = 'l',
+				["Turn Right"] = 'r',
+				["Use"] = 'U',
+				["Weapon Select 1"] = '1',
+				["Weapon Select 2"] = '2',
+				["Weapon Select 3"] = '3',
+				["Weapon Select 4"] = '4',
+				["Weapon Select 5"] = '5',
+				["Weapon Select 6"] = '6',
+				["Weapon Select 7"] = '7',
+			},
 		};
 
 		private static readonly Dictionary<string, string> BaseAxisLookupTable = new Dictionary<string, string>
@@ -867,6 +888,17 @@ namespace BizHawk.Emulation.Common
 				["Mouse Position Y"] = "mpY",
 				["Mouse Scroll X"] = "msX",
 				["Mouse Scroll Y"] = "msY",
+			},
+			[VSystemID.Raw.Doom] = new()
+			{
+				["Run Speed"] = "R",
+				["Strafing Speed"] = "S",
+				["Turning Speed"] = "T",
+				["Weapon Select"] = "W",
+				["Fly / Look"] = "L",
+				["Use Artifact"] = "U",
+				["Mouse Running"] = "mR",
+				["Mouse Turning"] = "mT"
 			},
 		};
 	}

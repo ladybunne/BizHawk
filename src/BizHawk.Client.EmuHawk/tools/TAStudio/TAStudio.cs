@@ -9,6 +9,7 @@ using BizHawk.Client.EmuHawk.ToolExtensions;
 using BizHawk.Client.EmuHawk.Properties;
 using BizHawk.Common.StringExtensions;
 using BizHawk.Emulation.Common;
+using BizHawk.WinForms.Controls;
 
 namespace BizHawk.Client.EmuHawk
 {
@@ -33,7 +34,6 @@ namespace BizHawk.Client.EmuHawk
 		private readonly List<TasClipboardEntry> _tasClipboard = new List<TasClipboardEntry>();
 		private const string CursorColumnName = "CursorColumn";
 		private const string FrameColumnName = "FrameColumn";
-		private MovieEndAction _originalEndAction; // The movie end behavior selected by the user (that is overridden by TAStudio)
 		private UndoHistoryForm _undoForm;
 		private Timer _autosaveTimer;
 
@@ -119,6 +119,23 @@ namespace BizHawk.Client.EmuHawk
 		public TAStudio()
 		{
 			InitializeComponent();
+			ToolStripMenuItemEx goToFrameMenuItem = new()
+			{
+				ShortcutKeys = Keys.Control | Keys.G,
+				Text = "Go to Frame...",
+			};
+			goToFrameMenuItem.Click += (_, _) =>
+			{
+				MainForm.PauseEmulator();
+				using InputPrompt dialog = new()
+				{
+					Text = "Go to Frame",
+					Message = "Jump/Seek to frame index:",
+					TextInputType = InputPrompt.InputType.Unsigned,
+				};
+				if (this.ShowDialogWithTempMute(dialog).IsOk()) GoToFrame(int.Parse(dialog.PromptText));
+			};
+			_ = EditSubMenu.DropDownItems.InsertAfter(ReselectClipboardMenuItem, insert: goToFrameMenuItem);
 
 			RecentSubMenu.Image = Resources.Recent;
 			recentMacrosToolStripMenuItem.Image = Resources.Recent;
@@ -145,9 +162,6 @@ namespace BizHawk.Client.EmuHawk
 			TasView.PointedCellChanged += TasView_PointedCellChanged;
 			LastPositionFrame = -1;
 
-			BookMarkControl.LoadedCallback = BranchLoaded;
-			BookMarkControl.SavedCallback = BranchSaved;
-			BookMarkControl.RemovedCallback = BranchRemoved;
 			TasView.MouseLeave += TAStudio_MouseLeave;
 			TasView.CellHovered += (_, e) =>
 			{
@@ -271,14 +285,11 @@ namespace BizHawk.Client.EmuHawk
 			// Attempts to load failed, abort
 			if (!success)
 			{
-				Disengage();
 				return false;
 			}
 
 			MainForm.AddOnScreenMessage("TAStudio engaged");
-			_originalEndAction = Config.Movies.MovieEndAction;
 			MainForm.DisableRewind();
-			Config.Movies.MovieEndAction = MovieEndAction.Record;
 			MainForm.SetMainformMovieInfo();
 			MovieSession.ReadOnly = true;
 			SetSplicer();
@@ -347,7 +358,10 @@ namespace BizHawk.Client.EmuHawk
 					name: name,
 					widthUnscaled: (maxLength * 6) + 14, // magic numbers reused in EditBranchTextPopUp() --feos // not since eb63fa5a9 (before 2.3.3) --yoshi
 					type: type,
-					text: mnemonic));
+					text: mnemonic)
+				{
+					Rotatable = type is ColumnType.Axis
+				});
 			}
 
 			var columnsToHide = TasView.AllColumns
@@ -657,7 +671,6 @@ namespace BizHawk.Client.EmuHawk
 			_engaged = false;
 			MainForm.PauseOnFrame = null;
 			MainForm.AddOnScreenMessage("TAStudio disengaged");
-			Config.Movies.MovieEndAction = _originalEndAction;
 			WantsToControlRewind = false;
 			MainForm.EnableRewind(true);
 			MainForm.SetMainformMovieInfo();

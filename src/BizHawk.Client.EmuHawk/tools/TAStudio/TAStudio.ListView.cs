@@ -296,7 +296,9 @@ namespace BizHawk.Client.EmuHawk
 
 		/// <returns><paramref name="index"/> with leading zeroes such that every frame in the movie will be printed with the same number of digits</returns>
 		private string FrameToStringPadded(int index)
-			=> index.ToString(_formatCache[(int)Math.Log10(Math.Max(CurrentTasMovie.InputLogLength, 1))]);
+			=> index.ToString(_formatCache[Math.Max(
+				4,
+				NumberExtensions.Log10(Math.Max(CurrentTasMovie.InputLogLength, 1)))]);
 
 		private void TasView_QueryItemText(int index, RollColumn column, out string text, ref int offsetX, ref int offsetY)
 		{
@@ -355,7 +357,11 @@ namespace BizHawk.Client.EmuHawk
 			catch (Exception ex)
 			{
 				text = "";
-				DialogController.ShowMessageBox($"oops\n{ex}");
+				DialogController.ShowMessageBox("Encountered unrecoverable error while drawing the input roll.\n" +
+					"The current movie will be closed without saving.\n" +
+					$"The exception was:\n\n{ex}", caption: "Failed to draw input roll");
+				TastudioStopMovie();
+				StartNewTasMovie();
 			}
 		}
 
